@@ -18,10 +18,10 @@ use App\Http\Controllers\Auth\VerificationController;
 */
 
 Route::middleware('guest:api')->group(function () {
-    Route::post('register', [RegisterController::class, 'register']);
-    Route::post('verification/verify', [VerificationController::class, 'verify']);
-    Route::post('verification/resend', [VerificationController::class, 'resend']);
-    Route::post('login', [LoginController::class, 'login']);
+    Route::post('register', [RegisterController::class, 'register'])->name('register');
+    Route::post('verification/verify', [VerificationController::class, 'verify'])->name('verification.verify');
+    Route::post('verification/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+    Route::post('login', [LoginController::class, 'login'])->name('login');
 });
 
 Route::middleware('auth:api')->group(function () {

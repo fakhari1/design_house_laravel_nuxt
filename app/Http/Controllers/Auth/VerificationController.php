@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 //use Illuminate\Foundation\Auth\VerifiesEmails;
 
@@ -43,9 +45,27 @@ class VerificationController extends Controller
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
 
-    public function verify(Request $request, User $User)
+    public function verify(Request $request, User $user)
     {
+        if (!URL::hasValidSignature($request)) {
+            return response()->json([
+                'errors' => 'Invalid verification link.'
+            ], 422);
+        }
 
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Email address already verified.'
+            ]);
+        }
+
+        $user->markEmailAsVerified();
+
+        event(new Verified($user));
+
+        return response()->json([
+            'message' => 'Email successfully verified.'
+        ]);
     }
 
     public function resend(Request $request)
